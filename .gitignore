@@ -1,0 +1,8 @@
+# VS Code
+.vscode
+
+# Python
+.env
+.mypy_cache
+__pycache__
+
