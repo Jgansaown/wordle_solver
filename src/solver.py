@@ -1,4 +1,5 @@
 from collections import Counter
+import string
 from typing import Dict, List, Counter, Tuple
 
 import numpy as np
@@ -57,55 +58,58 @@ class Analyzer:
             for counts in self.letter_count_in_pos()
         ]
 
-    def letter_freq_in_all(self):
+    def letter_freq_in_all(self) -> Counter:
         t = self.letter_count_in_all()
         return Counter({
             c: v/(sum(t.values()))
             for c, v in zip(t.keys(), t.values())
         })
 
-    # def save_plots(self):
-    #     y = self.letter_count_in_all()
-    #     print(y)
-    #     print(y.keys())
-    #     print(y.values())
-        
-    #     fig, ax= plt.subplots()
-    #     ax.bar(y.keys(), y.values())
-    #     fig.savefig('test.jpg')
-    #     fig.show()
-
+    ### Plots ###
     def save_frequency_analysis_plot(self, filename):
         fig, axs = plt.subplots(3, 2)
-        # print([(idx1, idx2, j) for idx1, i in enumerate(axs) for idx2, j in enumerate(i)])
         pos_freq = a.letter_freq_in_pos()
         all_freq = a.letter_freq_in_all()
-        print(all_freq)
+        X = list(string.ascii_uppercase)
         for i, ax in enumerate([a for tmp in axs for a in tmp]):
-            print(i)
-            print(ax)
             if i == 0:
-                ax.bar(all_freq.keys(), all_freq.values())
+                ax.bar(X, [all_freq[c] for c in X])
             else:
-                ax.bar(pos_freq[i-1].keys(), pos_freq[i-1].values())
-        
+                ax.bar(X, [pos_freq[i-1][c] for c in X])
         fig.savefig(filename)
-        fig.show()
+
+    def save_freq_bar_plot(self, filename):
+        pos_freq = self.letter_freq_in_pos()
+        all_freq = self.letter_freq_in_all()
+        X = list(string.ascii_uppercase)
+        x = np.arange(len(string.ascii_uppercase))
+        width = 0.1
+        fig, ax = plt.subplots(figsize=(20,5))
+        rects = []
+        rects.append(ax.bar(x - 5*width/2, [all_freq[c] for c in X],    width, label='all'))
+        rects.append(ax.bar(x - 3*width/2, [pos_freq[0][c] for c in X], width, label='first'))
+        rects.append(ax.bar(x - 1*width/2, [pos_freq[1][c] for c in X], width, label='second'))
+        rects.append(ax.bar(x + 1*width/2, [pos_freq[2][c] for c in X], width, label='third'))
+        rects.append(ax.bar(x + 3*width/2, [pos_freq[3][c] for c in X], width, label='fourth'))
+        rects.append(ax.bar(x + 5*width/2, [pos_freq[4][c] for c in X], width, label='fifth'))
+        
+        ax.set_ylabel('frequency')
+        ax.set_title('Frequency')
+        ax.set_xticks(x, string.ascii_uppercase)
+        ax.legend()
+        fig.savefig(filename, dpi=500)
     
     def save_plot(self, x, y, filename):
         fig, ax= plt.subplots()
         ax.bar(x, y)
         fig.savefig(filename)
-        fig.show()
 
 if __name__ == '__main__':
     import main
     s = Solver(word_list=main.get_scrabble_5_letter_words())
-    a = s.analyzer
-    
     print(f'Number of words: {len(s.word_list)}')
 
-    # for i, counts in enumerate(a.letter_freq_in_pos()):
-    #     a.save_plot(counts.keys(), counts.values(), f'frequency_{i}.jpg')
-
-    a.save_frequency_analysis_plot('frequency_analysis.jpg')
+    a = s.analyzer
+    a.save_frequency_analysis_plot('./out/frequency_analysis.jpg')
+    a.save_freq_bar_plot('./out/frequency.jpg')
+    
