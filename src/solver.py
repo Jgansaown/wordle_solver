@@ -65,11 +65,16 @@ class Analyzer:
             for c, v in zip(t.keys(), t.values())
         })
 
+
+class Plotter:
+    def __init__(self) -> None:
+        pass
+
     ### Plots ###
-    def save_frequency_analysis_plot(self, filename):
+    def save_frequency_analysis_plot(self, analyzer: Analyzer, filename: str):
         fig, axs = plt.subplots(3, 2)
-        pos_freq = a.letter_freq_in_pos()
-        all_freq = a.letter_freq_in_all()
+        pos_freq = analyzer.letter_freq_in_pos()
+        all_freq = analyzer.letter_freq_in_all()
         X = list(string.ascii_uppercase)
         for i, ax in enumerate([a for tmp in axs for a in tmp]):
             if i == 0:
@@ -78,9 +83,9 @@ class Analyzer:
                 ax.bar(X, [pos_freq[i-1][c] for c in X])
         fig.savefig(filename)
 
-    def save_freq_bar_plot(self, filename):
-        pos_freq = self.letter_freq_in_pos()
-        all_freq = self.letter_freq_in_all()
+    def save_freq_bar_plot(self, analyzer: Analyzer, filename: str):
+        pos_freq = analyzer.letter_freq_in_pos()
+        all_freq = analyzer.letter_freq_in_all()
         X = list(string.ascii_uppercase)
         x = np.arange(len(string.ascii_uppercase))
         width = 0.1
@@ -98,11 +103,6 @@ class Analyzer:
         ax.set_xticks(x, string.ascii_uppercase)
         ax.legend()
         fig.savefig(filename, dpi=500)
-    
-    def save_plot(self, x, y, filename):
-        fig, ax= plt.subplots()
-        ax.bar(x, y)
-        fig.savefig(filename)
 
 if __name__ == '__main__':
     import main
@@ -110,6 +110,8 @@ if __name__ == '__main__':
     print(f'Number of words: {len(s.word_list)}')
 
     a = s.analyzer
-    a.save_frequency_analysis_plot('./out/frequency_analysis.jpg')
-    a.save_freq_bar_plot('./out/frequency.jpg')
+
+    p = Plotter()
+    p.save_frequency_analysis_plot(analyzer=a, filename='./out/frequency_analysis.jpg')
+    p.save_freq_bar_plot(analyzer=a, filename='./out/frequency.jpg')
     
