@@ -32,10 +32,9 @@ def match_guess_to_answer(answer: str, guess: str, lower: bool = False) -> str:
         if c == answer[i]:
             ret[i] = 'C'
             present[c] -= 1
-
     # Check for present letters
     for i, c in enumerate(guess):
-        if present[c] > 0:
+        if present[c] > 0 and ret[i] != 'C':
             ret[i] = 'P'
             present[c] -= 1
 
