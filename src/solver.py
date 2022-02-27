@@ -13,38 +13,12 @@ def match_correct(word: str, correct: Iterable[str]):
             return False
     return True
 
-def match_incorrect(word: str, incorrects: Iterable[Iterable[str]]):
-    for incorrect in incorrects:
-        for w, i in zip(word, incorrect):
+def match_incorrect(word: str, incorrect: Iterable[Iterable[str]]):
+    for inc in incorrect:
+        for w, i in zip(word, inc):
             if w == i and i != '':
                 return False
     return True
-
-def filter_word_list(
-    word_array: NDArray, 
-    correct: Iterable[str],
-    incorrect: Iterable[Iterable[str]],
-    present: Iterable[str],
-    absent: Iterable[str]
-) -> NDArray:
-    """filter the word list based on 'Present' letters and 'Absent' letters
-
-    Args:
-        word_list (List[str]): list of words
-        present (Iterable[str]): list of letters present in the answer
-        absent (Iterable[str]): list of letters absent from the answer
-
-    Returns:
-        List[str]: filtered word list
-    """
-    return np.array([
-        w
-        for w in word_array
-        if set(w).issuperset(present) # True if every element in 'present' is in the word
-        and set(w).isdisjoint(absent) # True if every element in 'absent is NOT in the word
-        and match_correct(w, correct)
-        and match_incorrect(w, incorrect)
-    ])
 
 class Solver:
     def __init__(self, word_list: List[str], isupper: bool = True):
