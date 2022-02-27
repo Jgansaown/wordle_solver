@@ -53,19 +53,20 @@ class Plotter:
         fig, axs = plt.subplots(3, 2)
         pos_freq = analyzer.letter_freq_in_pos()
         all_freq = analyzer.letter_freq_in_all()
-        X = list(string.ascii_uppercase)
+        X = list(range(26))
         for i, ax in enumerate([a for tmp in axs for a in tmp]):
             if i == 0:
                 ax.bar(X, [all_freq[c] for c in X])
             else:
                 ax.bar(X, [pos_freq[i-1][c] for c in X])
+            ax.set_xticks(X, string.ascii_uppercase)
         fig.savefig(filename)
 
     def save_freq_bar_plot(self, analyzer: Analyzer, filename: str):
         pos_freq = analyzer.letter_freq_in_pos()
         all_freq = analyzer.letter_freq_in_all()
-        X = list(string.ascii_uppercase)
-        x = np.arange(len(string.ascii_uppercase))
+        X = list(range(26))
+        x = np.arange(26)
         width = 0.1
         fig, ax = plt.subplots(figsize=(20,5))
         rects = []
@@ -81,3 +82,16 @@ class Plotter:
         ax.set_xticks(x, string.ascii_uppercase)
         ax.legend()
         fig.savefig(filename, dpi=500)
+
+if __name__ == '__main__':
+    from pathlib import Path
+    from main import read_words_list
+
+    word_array = read_words_list(Path('files', 'scrabble_5_letter_words.txt'))
+    a = Analyzer(
+        words = np.array([ [ ord(c)-ord('A') for c in word ] for word in word_array])
+    )
+
+    p = Plotter()
+    p.save_frequency_analysis_plot(analyzer=a, filename='./out/frequency_analysis.jpg')
+    p.save_freq_bar_plot(analyzer=a, filename='./out/frequency.jpg')
